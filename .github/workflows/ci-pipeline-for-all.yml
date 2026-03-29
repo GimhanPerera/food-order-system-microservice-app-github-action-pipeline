@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: CI for all services
 
 on:
   push:
@@ -39,11 +39,11 @@ jobs:
       # -----------------------------
       # Python Setup (backend only)
       # -----------------------------
-      - name: Set up Python
-        if: contains(matrix.service, 'backend')
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+#      - name: Set up Python
+#        if: contains(matrix.service, 'backend')
+#        uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.10'
 
 #      - name: Install dependencies
 #        if: contains(matrix.service, 'backend')
@@ -64,7 +64,7 @@ jobs:
 #        run: pytest ${{ matrix.service }}
 
       # -----------------------------
-      # Build Docker Image (IMPORTANT PART)
+      # Build Docker Image (per service)
       # -----------------------------
       - name: Build Docker Image
         run: |
@@ -93,6 +93,6 @@ jobs:
       # -----------------------------
       # Push Image
       # -----------------------------
-      - name: Push Docker Image
-        run: |
-          docker push $DOCKERHUB_USERNAME/${{ matrix.service }}:${{ github.sha }}
+#      - name: Push Docker Image
+#        run: |
+#          docker push $DOCKERHUB_USERNAME/${{ matrix.service }}:${{ github.sha }}

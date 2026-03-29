@@ -1,5 +1,4 @@
-name: Admin ui - CD Pipeline
-
+name: CD - Admin UI
 on:
   workflow_dispatch:
    inputs:
@@ -10,7 +9,6 @@ on:
      tag:
        description: "Docker image tag"
        required: true
-       default: "latest"
     
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}

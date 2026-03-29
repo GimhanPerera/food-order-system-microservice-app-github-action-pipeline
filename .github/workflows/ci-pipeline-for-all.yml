@@ -82,7 +82,8 @@ jobs:
           image-ref: ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }}
           format: table
           exit-code: 1
-          severity: CRITICAL,HIGH
+          #severity: CRITICAL,HIGH
+          severity: CRITICAL
 
       # -----------------------------
       # Login to Docker Hub

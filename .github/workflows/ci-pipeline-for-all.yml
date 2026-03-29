@@ -28,22 +28,21 @@ jobs:
       # -----------------------------
       # SonarQube Scan (per service)
       # -----------------------------
- #     - name: SonarQube Scan
- #       uses: sonarsource/sonarqube-scan-action@v2
- #       with:
- #         projectBaseDir: ${{ matrix.service }}
- #       env:
- #         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
- #         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      # -----------------------------
-      # Python Setup (backend only)
-      # -----------------------------
-#      - name: Set up Python
-#        if: contains(matrix.service, 'backend')
-#        uses: actions/setup-python@v5
-#        with:
-#          python-version: '3.10'
+      - name: SonarQube Scan
+        if: contains(matrix.service, 'admin-backend')
+        uses: sonarsource/sonarqube-scan-action@v2
+        with:
+          projectBaseDir: ${{ matrix.service }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      # - uses: SonarSource/sonarqube-quality-gate-action@v1
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      
 
 #      - name: Install dependencies
 #        if: contains(matrix.service, 'backend')

@@ -16,7 +16,7 @@ env:
   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
 jobs:
-  build-scan-push:
+  sonar-scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
           
       # -----------------------------
-      # SonarQube Scan (per service)
+      # SonarQube Scan
       # -----------------------------
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v2
@@ -45,14 +45,20 @@ jobs:
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
+  build-scan-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+	  
       # -----------------------------
-      # Build Docker Image (per service)
+      # Build Docker Image
       # -----------------------------
       - name: Build Docker Image
         run: |
           docker build \
             -f ${{ matrix.service }}/Dockerfile \
-            -t ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }} \
+            -t admin-ui/${{ matrix.service }}:${{ github.sha }} \
             admin-ui
 
       # -----------------------------

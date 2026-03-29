@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-#  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
 jobs:
   build-scan-push:
@@ -70,7 +70,7 @@ jobs:
         run: |
           docker build \
             -f ${{ matrix.service }}/Dockerfile \
-            -t $DOCKERHUB_USERNAME/${{ matrix.service }}:${{ github.sha }} \
+            -t ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }} \
             ${{ matrix.service }}
 
       # -----------------------------

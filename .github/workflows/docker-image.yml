@@ -1,0 +1,80 @@
+name: CI - Admin UI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'admin-ui/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'admin-ui/**'
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+jobs:
+  build-scan-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -----------------------------
+      # Checkout Code
+      # -----------------------------
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      # -----------------------------
+      # SonarQube Scan (per service)
+      # -----------------------------
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v2
+        with:
+          projectBaseDir: admin-ui
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      # If you wish to fail your job when the Quality Gate is red, uncomment the
+      # following lines. This would typically be used to fail a deployment.
+      # - uses: SonarSource/sonarqube-quality-gate-action@v1
+      #   timeout-minutes: 5
+      #   env:
+      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      # -----------------------------
+      # Build Docker Image (per service)
+      # -----------------------------
+      - name: Build Docker Image
+        run: |
+          docker build \
+            -f ${{ matrix.service }}/Dockerfile \
+            -t ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.service }}:${{ github.sha }} \
+            admin-ui
+
+      # -----------------------------
+      # Trivy Image Scan
+      # -----------------------------
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.DOCKERHUB_USERNAME }}/admin-ui:${{ github.sha }}
+          format: table
+          exit-code: 1
+          #severity: CRITICAL,HIGH
+          severity: CRITICAL
+
+      # -----------------------------
+      # Login to Docker Hub
+      # -----------------------------
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+
+      # -----------------------------
+      # Push Image
+      # -----------------------------
+#      - name: Push Docker Image
+#        run: |
+#          docker push $DOCKERHUB_USERNAME/admin-ui:${{ github.sha }}

@@ -83,6 +83,6 @@ jobs:
       # -----------------------------
       # Push Image
       # -----------------------------
-#      - name: Push Docker Image
-#        run: |
-#          docker push $DOCKERHUB_USERNAME/admin-ui:${{ github.sha }}
+      - name: Push Docker Image
+        run: |
+          docker push $DOCKERHUB_USERNAME/admin-ui:${{ github.sha }}
